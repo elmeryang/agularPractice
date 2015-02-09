@@ -1,297 +1,204 @@
-# angular-seed — the seed for AngularJS apps
-
-This project is an application skeleton for a typical [AngularJS](http://angularjs.org/) web app.
-You can use it to quickly bootstrap your angular webapp projects and dev environment for these
-projects.
-
-The seed contains a sample AngularJS application and is preconfigured to install the Angular
-framework and a bunch of development and testing tools for instant web development gratification.
-
-The seed app doesn't do much, just shows how to wire two controllers and views together.
+Angular Schema Form [![alt text][1.1]][1]
+===================
+[![Build Status](https://travis-ci.org/Textalk/angular-schema-form.svg?branch=master)](https://travis-ci.org/Textalk/angular-schema-form)
+[![Coverage Status](https://coveralls.io/repos/Textalk/angular-schema-form/badge.png?branch=master)](https://coveralls.io/r/Textalk/angular-schema-form?branch=development)
+[![Bower version](https://badge.fury.io/bo/angular-schema-form.svg)](http://badge.fury.io/bo/angular-schema-form)
+[![npm version](https://badge.fury.io/js/angular-schema-form.svg)](http://badge.fury.io/js/angular-schema-form)
 
 
-## Getting Started
+Generate forms from JSON schemas using AngularJS!
 
-To get you started you can simply clone the angular-seed repository and install the dependencies:
+Web Page
+--------
+[http://textalk.github.io/angular-schema-form/](http://textalk.github.io/angular-schema-form/)
 
-### Prerequisites
+Demo Time!
+----------
+[Try out the example page](http://textalk.github.io/angular-schema-form/examples/bootstrap-example.html).
+Try editing the schema or form definition and see what comes out!
 
-You need git to clone the angular-seed repository. You can get git from
-[http://git-scm.com/](http://git-scm.com/).
+What is it?
+----------
 
-We also use a number of node.js tools to initialize and test angular-seed. You must have node.js and
-its package manager (npm) installed.  You can get them from [http://nodejs.org/](http://nodejs.org/).
+Schema Form is a set of AngularJS directives (and a couple of services). It can do two things to
+make life easier:
 
-### Clone angular-seed
+1. Create a form directly from a JSON schema.
+2. Validate form fields against that same JSON schema.
 
-Clone the angular-seed repository using [git][git]:
+Schema Form uses convention over configuration, so it comes packaged with some sensible defaults.
+But you can always customize it by changing the order and types of form fields.
 
+#### JSON Form
+Schema Form is inspired by the nice [JSON Form](https://github.com/joshfire/jsonform) library and
+aims to be roughly compatible with it, especially its form definition. So what sets Schema Form
+apart from JSON Form?
+
+1. Schema Form integrates deeply with AngularJS and uses AngularJS conventions to handle forms.
+2. Schema Form uses [tv4](https://github.com/geraintluff/tv4) for validation, making it compatible
+   with version 4 of the JSON schema standard.
+3. By default, Schema Form generates Bootstrap 3-friendly HTML.
+
+Documentation
+-------------
+There is one section of documentation covering [defaults and form types](docs/index.md). There is another section for how you [extend angular schema form with your own types](https://github.com/Textalk/angular-schema-form/blob/master/docs/extending.md).
+
+Basic Usage
+-----------
+
+First, expose your schema, form, and model to the $scope.
+
+```javascript
+angular.module('myModule', ['schemaForm'])
+       .controller('FormController', function($scope) {
+  $scope.schema = {
+    type: "object",
+    properties: {
+      name: { type: "string", minLength: 2, title: "Name", description: "Name or alias" },
+      title: {
+        type: "string",
+        enum: ['dr','jr','sir','mrs','mr','NaN','dj']
+      }
+    }
+  };
+
+  $scope.form = [
+    "*",
+    {
+      type: "submit",
+      title: "Save"
+    }
+  ];
+
+  $scope.model = {};
+});
 ```
-git clone https://github.com/angular/angular-seed.git
-cd angular-seed
+
+Then load them into Schema Form using the `sfSchema`, `sfForm`, and `sfModel` directives.
+
+```html
+<div ng-controller="FormController">
+    <form sf-schema="schema" sf-form="form" sf-model="model"></form>
+</div>
 ```
 
-If you just want to start a new project without the angular-seed commit history then you can do:
+Installation
+------------
+
+### Bower
+
+It's simplest to install Schema Form using [Bower](http://bower.io/).
 
 ```bash
-git clone --depth=1 https://github.com/angular/angular-seed.git <your-project-name>
+bower install angular-schema-form
 ```
 
-The `depth=1` tells git to only pull down one commit worth of historical data.
+This will install the latest release and basic dependencies. See
+[dependecies section below](#dependencies).
 
-### Install Dependencies
+### Manual
 
-We have two kinds of dependencies in this project: tools and angular framework code.  The tools help
-us manage and test the application.
+You can also just download the contents of the `dist/` folder and add dependencies manually.
 
-* We get the tools we depend upon via `npm`, the [node package manager][npm].
-* We get the angular code via `bower`, a [client-side code package manager][bower].
+### Dependencies
 
-We have preconfigured `npm` to automatically run `bower` so we can simply do:
+Schema form has a lot of dependencies, most of which are optional. Schema Form depends on:
 
-```
-npm install
-```
+1. [AngularJS](https://angularjs.org/) version 1.3.x is recomended. Version 1.2.x
+   has some limitation. See [known limitations](docs/knownlimitations.md).
+2. [angular-sanitize](https://docs.angularjs.org/api/ngSanitize)
+3. [tv4](https://github.com/geraintluff/tv4)
+4. [objectpath](https://github.com/mike-marcacci/objectpath)
+5. [bootstrap 3](http://getbootstrap.com/)
 
-Behind the scenes this will also call `bower install`.  You should find that you have two new
-folders in your project.
-
-* `node_modules` - contains the npm packages for the tools we need
-* `app/bower_components` - contains the angular framework files
-
-*Note that the `bower_components` folder would normally be installed in the root folder but
-angular-seed changes this location through the `.bowerrc` file.  Putting it in the app folder makes
-it easier to serve the files by a webserver.*
-
-### Run the Application
-
-We have preconfigured the project with a simple development web server.  The simplest way to start
-this server is:
-
-```
-npm start
-```
-
-Now browse to the app at `http://localhost:8000/app/index.html`.
+If you install via bower you get all of the above except bootstrap since we
+don't want to push a certain version or flavor on you. Also make
+sure you got the angular version you actually want.
 
 
+#### Additional dependecies
 
-## Directory Layout
+1. If you'd like to use drag-and-drop reordering of arrays, you'll also need [ui-sortable](https://github.com/angular-ui/ui-sortable) and its [jQueryUI](http://jqueryui.com/) dependencies. See the *ui-sortable* documentation for details about which parts of jQueryUI are needed. You can safely ignore these if you don't need reordering.
+2. Schema Form provides tabbed arrays through the form type `tabarray`. Tab arrays default to tabs on the left side. For these to work, you'll need to include the CSS from [bootstrap-vertical-tabs](https://github.com/dbtek/bootstrap-vertical-tabs). However, you won't need Bootstrap Vertical Tabs for horizontal tabs (the `tabType: "top"` option).
 
-```
-app/                    --> all of the source files for the application
-  app.css               --> default stylesheet
-  components/           --> all app specific modules
-    version/              --> version related components
-      version.js                 --> version module declaration and basic "version" value service
-      version_test.js            --> "version" value service tests
-      version-directive.js       --> custom directive that returns the current app version
-      version-directive_test.js  --> version directive tests
-      interpolate-filter.js      --> custom interpolation filter
-      interpolate-filter_test.js --> interpolate filter tests
-  view1/                --> the view1 view template and logic
-    view1.html            --> the partial template
-    view1.js              --> the controller logic
-    view1_test.js         --> tests of the controller
-  view2/                --> the view2 view template and logic
-    view2.html            --> the partial template
-    view2.js              --> the controller logic
-    view2_test.js         --> tests of the controller
-  app.js                --> main application module
-  index.html            --> app layout file (the main html template file of the app)
-  index-async.html      --> just like index.html, but loads js files asynchronously
-karma.conf.js         --> config file for running unit tests with Karma
-e2e-tests/            --> end-to-end tests
-  protractor-conf.js    --> Protractor config file
-  scenarios.js          --> end-to-end scenarios to be run by Protractor
+The minified files include templates - no need to load additional HTML files.
+
+
+### Script Loading
+
+Schema form is split into two main files, `dist/schema-form.min.js` and
+`dist/boostrap-decorator.min.js` and they need be loaded in that order. AngularJ,
+[tv4](https://github.com/geraintluff/tv4) and [objectpath](https://github.com/mike-marcacci/objectpath)
+also needs to be loaded *before* Schema Form.
+
+
+```html
+<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="bower_components/tv4/tv4.js"></script>
+<script type="text/javascript" src="bower_components/objectpath/lib/ObjectPath.js"></script>
+<script type="text/javascript" src="bower_components/angular-schema-form/dist/schema-form.min.js"></script>
+<script type="text/javascript" src="bower_components/angular-schema-form/dist/bootstrap-decorator.min.js"></script>
 ```
 
-## Testing
+### Module loading
+Don't forget to load the `schemaForm` module or nothing will happen.
 
-There are two kinds of tests in the angular-seed application: Unit tests and End to End tests.
-
-### Running Unit Tests
-
-The angular-seed app comes preconfigured with unit tests. These are written in
-[Jasmine][jasmine], which we run with the [Karma Test Runner][karma]. We provide a Karma
-configuration file to run them.
-
-* the configuration is found at `karma.conf.js`
-* the unit tests are found next to the code they are testing and are named as `..._test.js`.
-
-The easiest way to run the unit tests is to use the supplied npm script:
-
-```
-npm test
+```javascript
+angular.module('myModule', ['schemaForm']);
 ```
 
-This script will start the Karma test runner to execute the unit tests. Moreover, Karma will sit and
-watch the source and test files for changes and then re-run the tests whenever any of them change.
-This is the recommended strategy; if your unit tests are being run every time you save a file then
-you receive instant feedback on any changes that break the expected code functionality.
+Add-ons
+------
+There are several add-ons available, for a full list see the [web page](http://textalk.github.io/angular-schema-form/#third-party-addons).
+Your can also [create your own add-ons!](docs/extending.md)
 
-You can also ask Karma to do a single run of the tests and then exit.  This is useful if you want to
-check that a particular version of the code is operating as expected.  The project contains a
-predefined script to do this:
+Contributing
+------------
+Contributions are welcome! Please see [Contributing.md](CONTRIBUTING.md) for more info.
 
-```
-npm run test-single-run
-```
+Building
+--------
+The files in the `dist/` folder, plus dependencies, are all you need to use Schema Form. But if
+you'd like to build it yourself, we use [gulp](http://gulpjs.com/).
 
+First off, you need to have nodejs installed. Then install all dev dependencies of the
+project with npm, install gulp and run the default task.
 
-### End to end testing
-
-The angular-seed app comes with end-to-end tests, again written in [Jasmine][jasmine]. These tests
-are run with the [Protractor][protractor] End-to-End test runner.  It uses native events and has
-special features for Angular applications.
-
-* the configuration is found at `e2e-tests/protractor-conf.js`
-* the end-to-end tests are found in `e2e-tests/scenarios.js`
-
-Protractor simulates interaction with our web app and verifies that the application responds
-correctly. Therefore, our web server needs to be serving up the application, so that Protractor
-can interact with it.
-
-```
-npm start
+```bash
+$ npm install
+$ sudo npm install -g gulp
+$ bower install
+$ gulp
 ```
 
-In addition, since Protractor is built upon WebDriver we need to install this.  The angular-seed
-project comes with a predefined script to do this:
+The default task uses
+[gulp-angular-templatecache](https://github.com/miickel/gulp-angular-templatecache) to compile all
+html templates to js and then concatenates and minifies them with the rest of the sources.
 
-```
-npm run update-webdriver
-```
+You can also run `gulp watch` to have it rebuild on change.
 
-This will download and install the latest version of the stand-alone WebDriver tool.
+Tests
+-----
+Unit tests are run with [karma](http://karma-runner.github.io) and written using
+[mocha](http://visionmedia.github.io/mocha/), [chai](http://chaijs.com/) and
+[sinon](http://sinonjs.org/)
 
-Once you have ensured that the development web server hosting our application is up and running
-and WebDriver is updated, you can run the end-to-end tests using the supplied npm script:
+To run the tests:
 
-```
-npm run protractor
-```
+1. Install all dependencies via NPM
+2. Install dev dependencies with bower.
+3. Install the Karma CLI
+4. Run the tests
 
-This script will execute the end-to-end tests against the application being hosted on the
-development server.
-
-
-## Updating Angular
-
-Previously we recommended that you merge in changes to angular-seed into your own fork of the project.
-Now that the angular framework library code and tools are acquired through package managers (npm and
-bower) you can use these tools instead to update the dependencies.
-
-You can update the tool dependencies by running:
-
-```
-npm update
+```bash
+$ npm install
+$ bower install
+$ sudo npm install -g karma-cli
+$ karma start karma.conf.js
 ```
 
-This will find the latest versions that match the version ranges specified in the `package.json` file.
-
-You can update the Angular dependencies by running:
-
-```
-bower update
-```
-
-This will find the latest versions that match the version ranges specified in the `bower.json` file.
-
-
-## Loading Angular Asynchronously
-
-The angular-seed project supports loading the framework and application scripts asynchronously.  The
-special `index-async.html` is designed to support this style of loading.  For it to work you must
-inject a piece of Angular JavaScript into the HTML page.  The project has a predefined script to help
-do this.
-
-```
-npm run update-index-async
-```
-
-This will copy the contents of the `angular-loader.js` library file into the `index-async.html` page.
-You can run this every time you update the version of Angular that you are using.
-
-
-## Serving the Application Files
-
-While angular is client-side-only technology and it's possible to create angular webapps that
-don't require a backend server at all, we recommend serving the project files using a local
-webserver during development to avoid issues with security restrictions (sandbox) in browsers. The
-sandbox implementation varies between browsers, but quite often prevents things like cookies, xhr,
-etc to function properly when an html page is opened via `file://` scheme instead of `http://`.
-
-
-### Running the App during Development
-
-The angular-seed project comes preconfigured with a local development webserver.  It is a node.js
-tool called [http-server][http-server].  You can start this webserver with `npm start` but you may choose to
-install the tool globally:
-
-```
-sudo npm install -g http-server
-```
-
-Then you can start your own development web server to serve static files from a folder by
-running:
-
-```
-http-server -a localhost -p 8000
-```
-
-Alternatively, you can choose to configure your own webserver, such as apache or nginx. Just
-configure your server to serve the files under the `app/` directory.
-
-
-### Running the App in Production
-
-This really depends on how complex your app is and the overall infrastructure of your system, but
-the general rule is that all you need in production are all the files under the `app/` directory.
-Everything else should be omitted.
-
-Angular apps are really just a bunch of static html, css and js files that just need to be hosted
-somewhere they can be accessed by browsers.
-
-If your Angular app is talking to the backend server via xhr or other means, you need to figure
-out what is the best way to host the static files to comply with the same origin policy if
-applicable. Usually this is done by hosting the files by the backend server or through
-reverse-proxying the backend server(s) and webserver(s).
-
-
-## Continuous Integration
-
-### Travis CI
-
-[Travis CI][travis] is a continuous integration service, which can monitor GitHub for new commits
-to your repository and execute scripts such as building the app or running tests. The angular-seed
-project contains a Travis configuration file, `.travis.yml`, which will cause Travis to run your
-tests when you push to GitHub.
-
-You will need to enable the integration between Travis and GitHub. See the Travis website for more
-instruction on how to do this.
-
-### CloudBees
-
-CloudBees have provided a CI/deployment setup:
-
-<a href="https://grandcentral.cloudbees.com/?CB_clickstart=https://raw.github.com/CloudBees-community/angular-js-clickstart/master/clickstart.json">
-<img src="https://d3ko533tu1ozfq.cloudfront.net/clickstart/deployInstantly.png"/></a>
-
-If you run this, you will get a cloned version of this repo to start working on in a private git repo,
-along with a CI service (in Jenkins) hosted that will run unit and end to end tests in both Firefox and Chrome.
-
-
-## Contact
-
-For more information on AngularJS please check out http://angularjs.org/
-
-[git]: http://git-scm.com/
-[bower]: http://bower.io
-[npm]: https://www.npmjs.org/
-[node]: http://nodejs.org
-[protractor]: https://github.com/angular/protractor
-[jasmine]: http://jasmine.github.io
-[karma]: http://karma-runner.github.io
-[travis]: https://travis-ci.org/
-[http-server]: https://github.com/nodeapps/http-server
+<!-- Please don't remove this: Grab your social icons from https://github.com/carlsednaoui/gitsocial -->
+[1.1]: http://i.imgur.com/tXSoThF.png (twitter icon with padding)
+[1]: http://www.twitter.com/ngSchemaForm
+[1.2]: http://i.imgur.com/wWzX9uB.png (twitter icon without padding)
