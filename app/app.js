@@ -48,17 +48,47 @@ angular.module('myModule', ['schemaForm'])
   };
 
   $scope.form = [
-       "*",
-    {
-      type: "submit",
-      title: "Save"
-    }
-  ];
+     {
+    "type": "help",
+    "helpvalue": "<h4>Array Example</h4><p>Try adding a couple of forms, reorder by drag'n'drop.</p>"
+	  },
+	  {
+	    "key": "comments",
+	    "add": "New",
+	    "style": {
+	      "add": "btn-success"
+	    },
+	    "items": [
+	      "comments[].name",
+	      "comments[].email",
+	      {
+	        "type": "conditional",
+	        "condition": "model.comments[arrayIndex].email",
+	        "items": [
+	          {
+	            "key": "comments[].spam",
+	            "type": "checkbox",
+	            "title": "Yes I want spam."
+	          }
+	        ]
+	      },
+	      {
+	        "key": "comments[].comment",
+	        "type": "textarea"
+	      }
+	    ]
+	  },
+	  {
+	    "type": "submit",
+	    "style": "btn-info",
+	    "title": "OK"
+	  }
+	  ];
 
-  $scope.model = {
-   "comments": [
-    {
-      "spam": true
-    }
-  ]};
+	  $scope.model = {
+	   "comments": [
+	    {
+	      "spam": true
+	    }
+	  ]};
 });
